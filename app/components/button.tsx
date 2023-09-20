@@ -5,7 +5,7 @@ const Button = styled.button`
   color: white;
   border: none;
   padding: 0.5rem 1rem;
-  margin-right: 1rem;
+  margin: 1rem;
   cursor: pointer;
   &:disabled {
     background-color: grey;

@@ -9,7 +9,7 @@ const Dashboard: React.FC = () => {
       <div>
         <ButtonComponent route="/bookScraper" name="BookScraper" />
         <ButtonComponent route="/9gagScraper" name="9gagScraper" />
-        <ButtonComponent route="/page3" name="Page 3" />
+        <ButtonComponent route="/9gagScraperV2" name="9gagScraperV2" />
         <ButtonComponent route="/page4" name="Page 4" />
       </div>
     </div>

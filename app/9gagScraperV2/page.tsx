@@ -1,14 +1,12 @@
 "use client";
 
 import React, { ChangeEvent, useEffect, useState } from "react";
-import styled, { css } from "styled-components";
 import Container from "../components/container";
 import Title from "../components/title";
 import Button from "../components/button";
 import Label from "../components/label";
 import Input from "../components/input";
-import List from "../components/list";
-import ListItem from "../components/listItem";
+import Image from "next/image";
 
 interface HighlightedTextProps {
   show: boolean;
@@ -26,7 +24,6 @@ const HighlightedText: React.FC<HighlightedTextProps> = ({ show, children }) => 
 };
 
 const HomePage = () => {
-  const [titles, setTitles] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
   const [maxResults, setMaxResults] = useState(10); // Default value
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -34,6 +31,7 @@ const HomePage = () => {
   const [showHighlight, setShowHighlight] = useState(false);
   const [highlightTimer, setHighlightTimer] = useState<ReturnType<typeof setInterval> | null>(null);
   const [selectedSection, setSelectedSection] = useState("");
+  const [images, setImages] = useState<(string | Buffer)[]>([]);
 
   useEffect(() => {
     if (isFetching) {
@@ -62,7 +60,6 @@ const HomePage = () => {
   }, [isFetching, highlightTimer]);
 
   const fetchTitles = () => {
-    setTitles([]);
     setIsFetching(true);
     setStartTime(Date.now());
     setEndTime(null);
@@ -70,17 +67,13 @@ const HomePage = () => {
     fetch(`/api/9gag?maxResults=${maxResults}&section=${selectedSection}`, {
       method: "GET",
       headers: {
-        "sourcePage": "9gagScraper",
+        sourcePage: "9gagScraperV2",
       },
     })
-      .then((res) => {
-        if (!res.ok || res.headers.get("Content-Type")?.indexOf("text/plain;charset=UTF-8") === -1) {
-          throw new Error("Invalid response");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setTitles(data.titles);
+      .then((res) => res.blob()) // Added to convert response to blob
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        setImages((prevImages) => [...prevImages, url]); // Store the URL of the blob
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -137,12 +130,31 @@ const HomePage = () => {
         />
       </div>
       {duration && <p>Fetch duration: {duration} seconds</p>}
-      <List>
-        <HighlightedText show={showHighlight}>Uhh this might take long...</HighlightedText>
-        {titles.map((title, index) => (
-          <ListItem key={index}>{title}</ListItem>
-        ))}
-      </List>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+        {images.map((image, index) => {
+          let src: string;
+
+          if (Buffer.isBuffer(image)) {
+            src = `data:image/png;base64,${image.toString("base64")}`;
+          } else if (typeof image === "string") {
+            src = image;
+          } else {
+            console.error("Unexpected image type");
+            return null;
+          }
+
+          return (
+            <div key={index}>
+              <Image
+                src={src}
+                alt={`image-${index}`}
+                width='200'
+                height='200'
+              />
+            </div>
+          );
+        })}
+      </div>
     </Container>
   );
 };

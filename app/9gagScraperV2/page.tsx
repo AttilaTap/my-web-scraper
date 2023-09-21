@@ -8,21 +8,6 @@ import Label from "../components/label";
 import Input from "../components/input";
 import Image from "next/image";
 
-interface HighlightedTextProps {
-  show: boolean;
-  children: React.ReactNode;
-}
-
-const HighlightedText: React.FC<HighlightedTextProps> = ({ show, children }) => {
-  const [opacity, setOpacity] = useState(show ? 1 : 0);
-
-  useEffect(() => {
-    setOpacity(show ? 1 : 0);
-  }, [show]);
-
-  return <p style={{ opacity: opacity, transition: "opacity 1s ease-in-out" }}>{children}</p>;
-};
-
 const HomePage = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [maxResults, setMaxResults] = useState(10); // Default value
@@ -31,7 +16,7 @@ const HomePage = () => {
   const [showHighlight, setShowHighlight] = useState(false);
   const [highlightTimer, setHighlightTimer] = useState<ReturnType<typeof setInterval> | null>(null);
   const [selectedSection, setSelectedSection] = useState("");
-  const [images, setImages] = useState<(string | Buffer)[]>([]);
+  const [images, setImages] = useState<(string | Blob)[]>([]);
 
   useEffect(() => {
     if (isFetching) {
@@ -64,16 +49,17 @@ const HomePage = () => {
     setStartTime(Date.now());
     setEndTime(null);
 
-    fetch(`/api/9gag?maxResults=${maxResults}&section=${selectedSection}`, {
+    const requestOptions: RequestInit = {
       method: "GET",
       headers: {
         sourcePage: "9gagScraperV2",
       },
-    })
-      .then((res) => res.blob()) // Added to convert response to blob
-      .then((blob) => {
-        const url = URL.createObjectURL(blob);
-        setImages((prevImages) => [...prevImages, url]); // Store the URL of the blob
+    };
+
+    fetch(`/api/9gag?maxResults=${maxResults}&section=${selectedSection}`, requestOptions)
+      .then((res) => res.json())
+      .then((data) => {
+        setImages((prevImages) => [...prevImages, ...data.images]);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
@@ -131,29 +117,16 @@ const HomePage = () => {
       </div>
       {duration && <p>Fetch duration: {duration} seconds</p>}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
-        {images.map((image, index) => {
-          let src: string;
-
-          if (Buffer.isBuffer(image)) {
-            src = `data:image/png;base64,${image.toString("base64")}`;
-          } else if (typeof image === "string") {
-            src = image;
-          } else {
-            console.error("Unexpected image type");
-            return null;
-          }
-
-          return (
-            <div key={index}>
-              <Image
-                src={src}
-                alt={`image-${index}`}
-                width='200'
-                height='200'
-              />
-            </div>
-          );
-        })}
+        {images.map((base64Image, index) => (
+          <div key={index}>
+            <img
+              src={`data:image/png;base64,${base64Image}`}
+              alt={`image-${index}`}
+              width='200'
+              height='200'
+            />
+          </div>
+        ))}
       </div>
     </Container>
   );

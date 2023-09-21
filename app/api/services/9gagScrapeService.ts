@@ -72,9 +72,9 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(() => resolve(), ms));
 }
 
-export async function capture(maxResults: any, section: string): Promise<Buffer> {
+export async function capture(maxResults: number, section: string): Promise<Buffer> {
   const url = `https://9gag.com/${section}`;
-  const browser = await puppeteer.launch({ headless: "new", protocolTimeout: 180000 });
+  const browser = await puppeteer.launch({ headless: "new" });
 
   // Load the specified page
   const page: Page = await browser.newPage();
@@ -88,19 +88,16 @@ export async function capture(maxResults: any, section: string): Promise<Buffer>
 
   // Scroll one viewport at a time, pausing to let content load
   const viewportHeight: number = page.viewport()!.height;
-  let viewportIncr: number = 0;
-  while (viewportIncr + viewportHeight < height) {
+  let viewportIncr: number = 100;
+  let numResults: number = 0;
+  while (viewportIncr + viewportHeight < height && numResults < maxResults) {
     await page.evaluate((_viewportHeight: number) => {
       window.scrollBy(0, _viewportHeight);
     }, viewportHeight);
-    await wait(20);
+    await wait(100);
     viewportIncr += viewportHeight;
+    numResults++;
   }
-
-  // Scroll back to top
-  await page.evaluate(() => {
-    window.scrollTo(0, 0);
-  });
 
   // Some extra delay to let images load
   await wait(100);

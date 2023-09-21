@@ -1,33 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parse9gagTitles } from "../services/9gagScrapeService";
-import { capture } from "../services/9gagScrapeService";
+import { parse9gagTitles, capture } from "../services/9gagScrapeService";
 
 export async function GET(req: NextRequest) {
   try {
     const url = req.nextUrl;
     const headers = req.headers;
-
-    console.log("Server: maxResults is ", url.searchParams.get("maxResults"));
-    console.log("Server: section is ", url.searchParams.get("section"));
-
-    const maxResults = url.searchParams.get("maxResults");
+    const maxResults = parseInt(url.searchParams.get("maxResults") || "0", 10);
     const section = url.searchParams.get("section") || "";
     const sourcePage = headers.get("sourcePage");
 
-    let titles;
     if (sourcePage === "9gagScraper") {
-      titles = await parse9gagTitles(maxResults, section);
+      const titles = await parse9gagTitles(maxResults, section);
+      console.log("Server: Sending titles:", titles);
+      return new NextResponse(JSON.stringify({ titles }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     } else if (sourcePage === "9gagScraperV2") {
-      titles = await capture(maxResults, section);
+      const imagesPromises = Array.from({ length: maxResults }, (_, i) => capture(i, section));
+      const images = await Promise.all(imagesPromises);
+      const base64Images = images.map((image) => image.toString("base64"));
+      console.log("Server: Sending images");
+      return new NextResponse(JSON.stringify({ images: base64Images }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
     } else {
       throw new Error("Invalid sourcePage parameter");
     }
-
-    console.log("Server: Sending titles:", titles);
-
-    return new NextResponse(JSON.stringify({ titles }), {
-      status: 200,
-    });
   } catch (error) {
     console.log("Server: Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });

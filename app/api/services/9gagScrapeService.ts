@@ -1,4 +1,4 @@
-import puppeteer, { Browser, BoundingBox, Page } from "puppeteer";
+import * as puppeteer from "puppeteer";
 
 export async function parse9gagTitles(maxResults: any, section: string) {
   let browser;
@@ -74,33 +74,61 @@ function wait(ms: number): Promise<void> {
 
 export async function capture(maxResults: number, section: string): Promise<Buffer> {
   const url = `https://9gag.com/${section}`;
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({ headless: false }); // Set to false for debugging
 
-  // Load the specified page
-  const page: Page = await browser.newPage();
-  await page.goto(url, { waitUntil: "load" });
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1024, height: 768 });
+  await page.goto(url, { waitUntil: "networkidle0" });
 
-  // Get the height of the rendered page
+  // Function to click the cookie acceptance button if it exists
+  const clickAcceptButton = async () => {
+    try {
+      const acceptButton = await page.waitForXPath('//button/span[text()="I ACCEPT"]', { timeout: 5000 });
+      await (acceptButton as puppeteer.ElementHandle).click();
+      console.log("Clicked on the cookie acceptance button.");
+
+      // Wait for 1 second(s)
+      await wait(1000);
+
+      // Check if the button is still there and click it again if it is
+      const acceptButtonAgain = await page.$x('//button/span[text()="I ACCEPT"]');
+      if (acceptButtonAgain.length > 0) {
+        await (acceptButtonAgain[0] as puppeteer.ElementHandle).click();
+        console.log("Clicked on the cookie acceptance button again.");
+      }
+    } catch (error) {
+      console.log("Error while trying to click on the cookie acceptance button.", error);
+    }
+  };
+
+  // Initially try to click the acceptance button
+  await clickAcceptButton();
+
   const bodyHandle = await page.$("body");
-  const boundingBox: BoundingBox | null | undefined = await bodyHandle?.boundingBox();
+  const boundingBox = await bodyHandle?.boundingBox();
   const height: number = boundingBox?.height || 0;
   await bodyHandle?.dispose();
 
-  // Scroll one viewport at a time, pausing to let content load
-  const viewportHeight: number = page.viewport()!.height;
-  let viewportIncr: number = 100;
+  const viewportHeight: number = page.viewport()?.height ?? 900;
+  let viewportIncr: number = 0;
   let numResults: number = 0;
-  while (viewportIncr + viewportHeight < height && numResults < maxResults) {
+
+  while (viewportIncr < height && numResults < maxResults) {
+    // Scroll
     await page.evaluate((_viewportHeight: number) => {
       window.scrollBy(0, _viewportHeight);
     }, viewportHeight);
-    await wait(100);
+
+    // Wait for a bit to ensure everything loads (adjust as needed)
+    await wait(3000);
+
     viewportIncr += viewportHeight;
     numResults++;
+
+    console.log(`Scrolled ${viewportIncr}px, taken ${numResults} screenshots so far.`);
   }
 
-  // Some extra delay to let images load
-  await wait(100);
-
-  return await page.screenshot({ type: "png" });
+  const screenshot = await page.screenshot({ type: "png" });
+  await browser.close();
+  return screenshot;
 }

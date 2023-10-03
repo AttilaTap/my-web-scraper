@@ -148,7 +148,7 @@ const HomePage = () => {
           </FormControl>
         </Box>
         {duration && <Typography variant='body1'>Fetch duration: {duration} seconds</Typography>}
-        <div style={{ maxWidth: "800px", margin: "auto" }}>
+        <div style={{ maxWidth: "1024px", margin: "auto" }}>
           <Carousel
             key={carouselKey}
             dynamicHeight={true}
@@ -164,7 +164,7 @@ const HomePage = () => {
             {images.map((base64Image, index) => (
               <div
                 key={index}
-                style={{ position: "relative", height: "600px", width: "800px" }}
+                style={{ position: "relative", height: "768px", width: "1024px" }}
               >
                 <Image
                   src={`data:image/png;base64,${base64Image}`}

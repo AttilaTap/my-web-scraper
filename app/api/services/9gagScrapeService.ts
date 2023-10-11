@@ -74,23 +74,20 @@ function wait(ms: number): Promise<void> {
 
 export async function capture(maxResults: number, section: string): Promise<Buffer> {
   const url = `https://9gag.com/${section}`;
-  const browser = await puppeteer.launch({ headless: false }); // Set to false for debugging
+  const browser = await puppeteer.launch({ headless: false });
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1024, height: 768 });
   await page.goto(url, { waitUntil: "networkidle0" });
 
-  // Function to click the cookie acceptance button if it exists
   const clickAcceptButton = async () => {
     try {
       const acceptButton = await page.waitForXPath('//button/span[text()="I ACCEPT"]', { timeout: 5000 });
       await (acceptButton as puppeteer.ElementHandle).click();
       console.log("Clicked on the cookie acceptance button.");
 
-      // Wait for 1 second(s)
       await wait(1000);
 
-      // Check if the button is still there and click it again if it is
       const acceptButtonAgain = await page.$x('//button/span[text()="I ACCEPT"]');
       if (acceptButtonAgain.length > 0) {
         await (acceptButtonAgain[0] as puppeteer.ElementHandle).click();
@@ -101,7 +98,6 @@ export async function capture(maxResults: number, section: string): Promise<Buff
     }
   };
 
-  // Initially try to click the acceptance button
   await clickAcceptButton();
 
   const bodyHandle = await page.$("body");
@@ -114,12 +110,10 @@ export async function capture(maxResults: number, section: string): Promise<Buff
   let numResults: number = 0;
 
   while (viewportIncr < height && numResults < maxResults) {
-    // Scroll
     await page.evaluate((_viewportHeight: number) => {
       window.scrollBy(0, _viewportHeight);
     }, viewportHeight);
 
-    // Wait for a bit to ensure everything loads (adjust as needed)
     await wait(3000);
 
     viewportIncr += viewportHeight;

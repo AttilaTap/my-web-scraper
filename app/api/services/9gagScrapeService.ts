@@ -74,7 +74,7 @@ function wait(ms: number): Promise<void> {
 
 export async function capture(maxResults: number, section: string): Promise<Buffer> {
   const url = `https://9gag.com/${section}`;
-  const browser = await puppeteer.launch({ headless: false });
+  const browser = await puppeteer.launch({ headless: "new" });
 
   const page = await browser.newPage();
   await page.setViewport({ width: 1024, height: 768 });

@@ -4,7 +4,7 @@ import Link from "next/link";
 interface ButtonComponentProps {
   route: string;
   name: string;
-  className?: string;  // Allow className as an optional prop
+  className?: string;
 }
 
 const ButtonComponent: React.FC<ButtonComponentProps> = ({ route, name, className }) => {

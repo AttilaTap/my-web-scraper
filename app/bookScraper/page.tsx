@@ -1,33 +1,113 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import RootLayout from "../layout";
 import "../globals.css";
 
+interface Genre {
+  name: string;
+  link: string;
+}
+
+interface Book {
+  title: string;
+  price: string;
+}
+
 const HomePage = () => {
-  const [titles, setTitles] = useState([]); // Adjusted the variable name to titles
-  const router = useRouter();
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState("");
+  const [minPrice, setMinPrice] = useState("0");
+  const [maxPrice, setMaxPrice] = useState("100");
+  const [books, setBooks] = useState<Book[]>([]);
+
+  const fetchGenres = () => {
+    console.log("Attempting to fetch genres...");
+    fetch("/api/genres")
+      .then((res) => {
+        console.log("Fetch status:", res.status);
+        return res.text(); // First, get the raw text
+      })
+      .then((text) => {
+        console.log("Raw response:", text);
+        const data = JSON.parse(text); // Now, parse it to JSON
+        console.log("Parsed data:", data);
+        if (!data.genres) {
+          throw new Error("Genres not found in the data");
+        }
+        setGenres(data.genres);
+      })
+      .catch((error) => {
+        console.error("Error while fetching genres:", error);
+      });
+  };
 
   useEffect(() => {
-    fetch("/api/books")
-      .then((res) => res.json())
-      .then((data) => {
-        setTitles(data.prices); // Adjusted to the variable name 'titles'
-      });
+    fetchGenres();
   }, []);
 
+  const fetchBooks = () => {
+    fetch(`/api/books?genreLink=${selectedGenre}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setBooks(data.books);
+      });
+  };
+
   return (
-    <RootLayout onBackClick={() => router.back()}>
+    <div>
+      <h1>Web Scraped Titles</h1>
+
+      {/* Dropdown for genres */}
+      <select
+        value={selectedGenre}
+        onChange={(e) => setSelectedGenre(e.target.value)}
+      >
+        <option
+          value=''
+          disabled
+        >
+          Select a genre
+        </option>
+        {genres.map((genre, index) => (
+          <option
+            key={index}
+            value={genre.link}
+          >
+            {genre.name}
+          </option>
+        ))}
+      </select>
+
+      {/* Inputs for price range */}
       <div>
-        <h1>Web Scraped Titles</h1>
-        <ul>
-          {titles.map((title, index) => ( // Adjusted the variable name 'titles' and 'title'
-            <li key={index}>{title}</li>
-          ))}
-        </ul>
+        <label>
+          Min Price:
+          <input
+            type='number'
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+          />
+        </label>
+        <label>
+          Max Price:
+          <input
+            type='number'
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+          />
+        </label>
       </div>
-    </RootLayout>
+
+      <button onClick={fetchBooks}>Fetch Books</button>
+
+      <ul>
+        {books.map((book, index) => (
+          <li key={index}>
+            {book.title} - £{book.price}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

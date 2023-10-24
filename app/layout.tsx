@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { NextPage } from "next";
+import Header from "./components/utils/header";
 
 type RootLayoutProps = {
   children: React.ReactNode;
@@ -7,21 +8,15 @@ type RootLayoutProps = {
 };
 
 const RootLayout: NextPage<RootLayoutProps> = ({ children, onBackClick }) => {
+  console.log("RootLayout rendered");
+
   return (
-    <html lang='en'>
+    <html lang="en">
       <body>
-        <div className='header'>
-          {onBackClick && (
-            <button
-              className='backButton'
-              onClick={onBackClick}
-            >
-              ←
-            </button>
-          )}
-          <span className='title'>Experimental WebScraper V1</span>
+        <div className='rootLayoutContainer'>
+          <Header onBackClick={onBackClick} />
+          {children}
         </div>
-        {children}
       </body>
     </html>
   );

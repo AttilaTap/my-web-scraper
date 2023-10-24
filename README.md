@@ -1,34 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# WebScraper - 9GAG Screenshotter
 
-## Getting Started
+## Introduction
 
-First, run the development server:
+Welcome to **WebScraper**, an experimental Next.js full-stack application. Its primary function is to create user-defined amounts of screenshots from various 9GAG streams such as hot, trending, fresh, and more. As of now, the project is in its V1 phase.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Stream Selection:** Users can select from various 9GAG streams, including hot, trending, fresh, etc.
+- **Screenshot Generation:** Specify the number of screenshots you want to capture from the chosen 9GAG stream.
+- **Full-Stack Integration:** A seamless frontend and backend experience built using Next.js.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technologies
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **Framework:** Next.js (both frontend and backend)
+- **Web Scraping:** Puppeteer
 
-## Learn More
+## How to Use
 
-To learn more about Next.js, take a look at the following resources:
+1. Navigate to the main page.
+2. Select a 9GAG stream from the dropdown menu.
+3. Define the number of screenshots you want.
+4. Press the "Fetch" button and wait.
+5. Download your screenshots.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Future Plans
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- Enhance scraping speed.
+- Introduce more screenshot customization options.
+- and alot more...
 
-## Deploy on Vercel
+## Disclaimer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is purely experimental. Always ensure you have the correct permissions when scraping content from websites. Respect robots.txt and website terms of service.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+

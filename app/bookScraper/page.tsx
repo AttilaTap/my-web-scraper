@@ -17,24 +17,29 @@ const HomePage = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [minPrice, setMinPrice] = useState("0");
-  const [maxPrice, setMaxPrice] = useState("100");
+  const [maxPrice, setMaxPrice] = useState("50");
   const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchGenres = () => {
     console.log("Attempting to fetch genres...");
     fetch("/api/genres")
       .then((res) => {
         console.log("Fetch status:", res.status);
-        return res.text(); // First, get the raw text
+        return res.text();
       })
       .then((text) => {
         console.log("Raw response:", text);
-        const data = JSON.parse(text); // Now, parse it to JSON
+        const data = JSON.parse(text);
         console.log("Parsed data:", data);
         if (!data.genres) {
           throw new Error("Genres not found in the data");
         }
-        setGenres(data.genres);
+
+        const sortedGenres = data.genres.sort((a: Genre, b: Genre) => a.name.localeCompare(b.name));
+
+        setGenres(sortedGenres);
       })
       .catch((error) => {
         console.error("Error while fetching genres:", error);
@@ -46,10 +51,22 @@ const HomePage = () => {
   }, []);
 
   const fetchBooks = () => {
+    setLoading(true);
+    setError(null);
     fetch(`/api/books?genreLink=${selectedGenre}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch books.");
+        }
+        return res.json();
+      })
       .then((data) => {
         setBooks(data.books);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
       });
   };
 
@@ -60,7 +77,10 @@ const HomePage = () => {
       {/* Dropdown for genres */}
       <select
         value={selectedGenre}
-        onChange={(e) => setSelectedGenre(e.target.value)}
+        onChange={(e) => {
+          console.log("Dropdown changed:", e.target.value);
+          setSelectedGenre(e.target.value);
+        }}
       >
         <option
           value=''
@@ -99,6 +119,10 @@ const HomePage = () => {
       </div>
 
       <button onClick={fetchBooks}>Fetch Books</button>
+
+      {/* Loading and Error Messages */}
+      {loading && <p>Loading...</p>}
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
 
       <ul>
         {books.map((book, index) => (

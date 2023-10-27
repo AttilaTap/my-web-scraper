@@ -14,7 +14,7 @@ const RootLayout: NextPage<RootLayoutProps> = ({ children, onBackClick }) => {
     <html lang="en">
       <body>
         <div className='rootLayoutContainer'>
-          <Header onBackClick={onBackClick} />
+          <Header/>
           {children}
         </div>
       </body>

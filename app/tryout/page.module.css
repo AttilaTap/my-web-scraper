@@ -1,0 +1,18 @@
+.nav{
+    background-color: var(--tab-color);
+    width: 30em;
+    height: 8em;
+    border-radius: 2em;
+    padding: 0 2em;
+    box-shadow: 0 1em 1em rgba(0,0,0, .2);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav__links{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}

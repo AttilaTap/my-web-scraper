@@ -17,7 +17,7 @@ body {
   flex-direction: column;
   height: 100vh;
   font-family: "Arial", sans-serif;
-  background: linear-gradient(45deg, #1ABC9C, #08382f);
+  background: linear-gradient(45deg, #264653, #2a9d8f, #f4a261, #e76f51);
 }
 
 .header {
@@ -47,4 +47,8 @@ body {
   outline: none;
   z-index: 10;
   padding-left: 20px;
+}
+
+:root {
+  --tab-color: #333; /* or any color you want */
 }

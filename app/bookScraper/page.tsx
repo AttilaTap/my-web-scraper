@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import "../globals.css";
+import styles from "./page.module.css";
 
 interface Genre {
   name: string;
@@ -71,16 +72,13 @@ const HomePage = () => {
   };
 
   return (
-    <div>
-      <h1>Web Scraped Titles</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Scraping from books.toscrape.com </h1>
 
-      {/* Dropdown for genres */}
       <select
         value={selectedGenre}
-        onChange={(e) => {
-          console.log("Dropdown changed:", e.target.value);
-          setSelectedGenre(e.target.value);
-        }}
+        onChange={(e) => setSelectedGenre(e.target.value)}
+        className={styles.dropdown}
       >
         <option
           value=''
@@ -98,14 +96,14 @@ const HomePage = () => {
         ))}
       </select>
 
-      {/* Inputs for price range */}
-      <div>
+      <div className={styles.priceRange}>
         <label>
           Min Price:
           <input
             type='number'
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
+            className={styles.priceInput}
           />
         </label>
         <label>
@@ -114,19 +112,28 @@ const HomePage = () => {
             type='number'
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
+            className={styles.priceInput}
           />
         </label>
       </div>
 
-      <button onClick={fetchBooks}>Fetch Books</button>
+      <button
+        onClick={fetchBooks}
+        className={styles.actionButton}
+      >
+        Fetch Books
+      </button>
 
       {/* Loading and Error Messages */}
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {loading && <p className={styles.message}>Loading...</p>}
+      {error && <p className={`${styles.message} ${styles.error}`}>Error: {error}</p>}
 
-      <ul>
+      <ul className={styles.bookList}>
         {books.map((book, index) => (
-          <li key={index}>
+          <li
+            key={index}
+            className={styles.bookItem}
+          >
             {book.title} - £{book.price}
           </li>
         ))}

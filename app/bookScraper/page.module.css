@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dropdown {
+  width: 250px;
+  height: 35px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 5px;
+  font-size: 1rem;
+}
+
+.priceRange {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.priceInput {
+  width: 80px;
+  height: 30px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.actionButton {
+  width: 150px;
+  height: 35px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+  /* Adjusted this */
+  background-color: #0056b3;
+}
+
+/* Loading and error message styling */
+.message {
+  margin-bottom: 15px;
+}
+
+.bookList {
+  /* Scoped the ul styles */
+  list-style-type: none;
+  padding: 0;
+}
+
+.bookItem {
+  /* Scoped the li styles */
+  background-color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.formLabel {
+  /* Scoped the label styles */
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

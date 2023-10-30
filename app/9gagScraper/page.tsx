@@ -27,7 +27,7 @@ const HighlightedText: React.FC<HighlightedTextProps> = ({ show, children }) => 
 const HomePage = () => {
   const [titles, setTitles] = useState([]);
   const [isFetching, setIsFetching] = useState(false);
-  const [maxResults, setMaxResults] = useState(10); // Default value
+  const [maxResults, setMaxResults] = useState(5);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [showHighlight, setShowHighlight] = useState(false);
@@ -69,12 +69,15 @@ const HomePage = () => {
     fetch(`/api/9gag?maxResults=${maxResults}&section=${selectedSection}`, {
       method: "GET",
       headers: {
-        "sourcePage": "9gagScraper",
+        sourcePage: "9gagScraper",
       },
     })
       .then((res) => {
-        if (!res.ok || res.headers.get("Content-Type")?.indexOf("text/plain;charset=UTF-8") === -1) {
-          throw new Error("Invalid response");
+        if (!res.ok) {
+          throw new Error(`Server responded with status: ${res.status}`);
+        }
+        if (res.headers.get("Content-Type")?.indexOf("application/json") === -1) {
+          throw new Error(`Unexpected Content-Type: ${res.headers.get("Content-Type")}`);
         }
         return res.json();
       })

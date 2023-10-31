@@ -24,7 +24,6 @@ const HomePage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchGenres = () => {
-    console.log("Attempting to fetch genres...");
     fetch("/api/genres")
       .then((res) => {
         console.log("Fetch status:", res.status);

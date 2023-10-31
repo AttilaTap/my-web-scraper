@@ -8,13 +8,11 @@ type RootLayoutProps = {
 };
 
 const RootLayout: NextPage<RootLayoutProps> = ({ children, onBackClick }) => {
-  console.log("RootLayout rendered");
-
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>
         <div className='rootLayoutContainer'>
-          <Header/>
+          <Header />
           {children}
         </div>
       </body>

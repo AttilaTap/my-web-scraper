@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parse9gagTitles, capture } from "../services/9gagScrapeService";
+import { parse9gagTitles} from "../services/9gagTitleService";
+import { capture } from "../services/9gagScreenCapService";
 
 export async function GET(req: NextRequest) {
   try {

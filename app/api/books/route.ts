@@ -4,16 +4,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: any) {
   try {
-    // Extract searchParams from the URL
     const searchParams = new URL(req.url).searchParams;
 
-    // Convert searchParams to an object
     const query: { [key: string]: string } = {};
     for (let [key, value] of searchParams.entries()) {
       query[key] = value;
     }
-
-    console.log("Extracted Query:", query);
 
     const { genreLink, minPrice = "0", maxPrice = "10000" } = query;
 
@@ -45,7 +41,7 @@ export async function GET(req: any) {
   } catch (error) {
     console.error("Error in /api/books:", error);
     if (error instanceof Error) {
-        return new NextResponse(JSON.stringify({ error: "Internal Server Error", message: error.message }), { status: 500 });
+      return new NextResponse(JSON.stringify({ error: "Internal Server Error", message: error.message }), { status: 500 });
     }
     return new NextResponse(JSON.stringify({ error: "Internal Server Error", message: "An unexpected error occurred" }), { status: 500 });
   }

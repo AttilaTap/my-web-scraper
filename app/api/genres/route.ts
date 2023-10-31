@@ -16,8 +16,6 @@ export async function GET() {
       genres.push({ name: genreName, link: genreLink });
     });
 
-    console.log("Fetched genres:", genres);
-
     return NextResponse.json({ genres });
   } catch (error) {
     console.error("Error fetching genres:", error);

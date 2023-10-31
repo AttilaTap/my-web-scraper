@@ -85,99 +85,97 @@ const HomePage = () => {
   const duration = endTime && startTime ? ((endTime - startTime) / 1000).toFixed(2) : null;
 
   return (
-    <RootLayout>
-      <Container
-        maxWidth='lg'
-        sx={{ minHeight: "100vh" }}
+    <Container
+      maxWidth='lg'
+      sx={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}
+    >
+      <Box
+        pt={4}
+        pb={2}
       >
-        <Box
-          pt={4}
-          pb={2}
+        <Typography
+          variant='h4'
+          gutterBottom
         >
-          <Typography
-            variant='h4'
-            gutterBottom
+          {maxResults} Scraped Screenshot(s) from 9GAG/{selectedSection}
+        </Typography>
+      </Box>
+      <Box
+        mb={2}
+        sx={{ display: "flex", alignItems: "center" }}
+      >
+        <FormControl
+          variant='filled'
+          sx={{ marginRight: "20px", width: "200px" }}
+        >
+          <InputLabel id='section-label'>Section</InputLabel>
+          <Select
+            labelId='section-label'
+            id='section'
+            value={selectedSection}
+            onChange={handleSectionChange}
           >
-            {maxResults} Scraped Screenshot(s) from 9GAG/{selectedSection}
-          </Typography>
-        </Box>
-        <Box
-          mb={2}
-          sx={{ display: "flex", alignItems: "center" }}
+            <MenuItem value='top'>Top</MenuItem>
+            <MenuItem value='trending'>Trending</MenuItem>
+            <MenuItem value='fresh'>Fresh</MenuItem>
+            <MenuItem value='home'>Home</MenuItem>
+            <MenuItem value=''>Nothing</MenuItem>
+          </Select>
+        </FormControl>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={fetchTitles}
+          disabled={isFetching}
+          startIcon={isFetching ? <CircularProgress size={20} /> : null}
         >
-          <FormControl
+          {isFetching ? "Fetching..." : "Fetch Screenshots"}
+        </Button>
+        <FormControl
+          variant='filled'
+          sx={{ marginLeft: "20px", width: "200px" }}
+        >
+          <TextField
+            type='number'
+            id='maxResults'
+            value={maxResults}
+            onChange={handleInputChange}
             variant='filled'
-            sx={{ marginRight: "20px", width: "200px" }}
-          >
-            <InputLabel id='section-label'>Section</InputLabel>
-            <Select
-              labelId='section-label'
-              id='section'
-              value={selectedSection}
-              onChange={handleSectionChange}
+            label='Number of results'
+            InputProps={{ inputProps: { min: 1, max: 10 } }}
+          />
+        </FormControl>
+      </Box>
+      {duration && <Typography variant='body1'>Fetch duration: {duration} seconds</Typography>}
+      <div style={{ maxWidth: "1024px", margin: "auto" }}>
+        <Carousel
+          key={carouselKey}
+          dynamicHeight={true}
+          emulateTouch={true}
+          showThumbs={false}
+          showStatus={false}
+          showIndicators={false}
+          showArrows={true}
+          infiniteLoop={true}
+          swipeable={true}
+          selectedItem={0}
+        >
+          {images.map((base64Image, index) => (
+            <div
+              key={index}
+              style={{ position: "relative", height: "768px", width: "1024px" }}
             >
-              <MenuItem value='top'>Top</MenuItem>
-              <MenuItem value='trending'>Trending</MenuItem>
-              <MenuItem value='fresh'>Fresh</MenuItem>
-              <MenuItem value='home'>Home</MenuItem>
-              <MenuItem value=''>Nothing</MenuItem>
-            </Select>
-          </FormControl>
-          <Button
-            variant='contained'
-            color='primary'
-            onClick={fetchTitles}
-            disabled={isFetching}
-            startIcon={isFetching ? <CircularProgress size={20} /> : null}
-          >
-            {isFetching ? "Fetching..." : "Fetch Screenshots"}
-          </Button>
-          <FormControl
-            variant='filled'
-            sx={{ marginLeft: "20px", width: "200px" }}
-          >
-            <TextField
-              type='number'
-              id='maxResults'
-              value={maxResults}
-              onChange={handleInputChange}
-              variant='filled'
-              label='Number of results'
-              InputProps={{ inputProps: { min: 1, max: 10 } }}
-            />
-          </FormControl>
-        </Box>
-        {duration && <Typography variant='body1'>Fetch duration: {duration} seconds</Typography>}
-        <div style={{ maxWidth: "1024px", margin: "auto" }}>
-          <Carousel
-            key={carouselKey}
-            dynamicHeight={true}
-            emulateTouch={true}
-            showThumbs={false}
-            showStatus={false}
-            showIndicators={false}
-            showArrows={true}
-            infiniteLoop={true}
-            swipeable={true}
-            selectedItem={0}
-          >
-            {images.map((base64Image, index) => (
-              <div
-                key={index}
-                style={{ position: "relative", height: "768px", width: "1024px" }}
-              >
-                <Image
-                  src={`data:image/png;base64,${base64Image}`}
-                  alt={`image-${index}`}
-                  layout='fill'
-                  objectFit='cover'
-                />
-              </div>
-            ))}
-          </Carousel>
-        </div>
-      </Container>
-    </RootLayout>
+              <Image
+                src={`data:image/png;base64,${base64Image}`}
+                alt={`image-${index}`}
+                layout='fill'
+                objectFit='cover'
+              />
+            </div>
+          ))}
+        </Carousel>
+      </div>
+    </Container>
   );
 };
 
